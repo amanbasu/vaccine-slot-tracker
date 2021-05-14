@@ -3,29 +3,6 @@ import datetime
 import boto3
 import requests     # gets the requests module from lambda layer
 
-# filter important details in json
-def extract_details_json(json, min_age):
-    details = {}
-    details['name'] = json.get('name', '')
-    details['block_name'] = json.get('block_name', '')
-    details['pincode'] = json.get('pincode', '')
-    details['fee_type'] = json.get('fee_type', '')
-    
-    sessions = json.get('sessions', [])
-    availability = 0
-    vaccine = ''
-    for session in sessions:
-        # usually all sessions have same vaccine
-        vaccine = session.get('vaccine', '')
-        if session['min_age_limit'] == min_age:
-            availability += session['available_capacity']
-    
-    details['sessions'] = len(sessions)
-    details['total_availability'] = availability
-    details['vaccine'] = vaccine
-    
-    return details
-
 # filter important details in readable format
 def extract_details_string(json, min_age):
     details = '-> Address: {} - {}\n' + \
@@ -52,7 +29,7 @@ def extract_details_string(json, min_age):
 def notify(payload):
     client = boto3.client('sns')
     response = client.publish(
-        TopicArn='arn:aws:sns:ap-south-1:750562860253:vaccine-notifier',
+        TopicArn='arn:aws:sns:...',
         Message=str(payload),
         Subject='All available vaccine appointments.',
         MessageStructure='string')
@@ -62,9 +39,9 @@ def lambda_handler(event, context):
     date = datetime.date.today() + datetime.timedelta(1)
     date = date.strftime("%d-%m-%Y")
     
-    # agra district id and pincode
-    district_id = '622'
-    pincode = '282007'
+    # district id and pincode
+    district_id = 'xxx'
+    pincode = 'xxxxxx'
     
     # search by 'pincode' or 'district'
     search_by = 'district'
